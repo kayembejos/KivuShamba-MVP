@@ -106,6 +106,7 @@ export class MainLayout {
 
   navItems = [
     { path: '/app', icon: 'dashboard', label: 'Dashboard' },
+    { path: '/app/scan', icon: 'photo_camera', label: 'Diagnostic IA' },
     { path: '/app/plan', icon: 'agriculture', label: 'Plan de Campagne' },
     { path: '/app/tracking', icon: 'payments', label: 'Suivi Dépenses' },
     { path: '/app/resilience', icon: 'shield_moon', label: 'Résilience' }

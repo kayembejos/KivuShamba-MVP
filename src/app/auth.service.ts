@@ -1,5 +1,6 @@
 import { Injectable, signal, computed, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 import { initializeApp } from 'firebase/app';
 import { 
   getAuth, 
@@ -11,13 +12,12 @@ import {
   onAuthStateChanged, 
   signOut 
 } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDocFromServer } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDocFromServer, onSnapshot } from 'firebase/firestore';
 import { GoogleGenAI } from '@google/genai';
 import rootFirebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(rootFirebaseConfig);
 export const auth = getAuth(app);
-// The config type needs to have firestoreDatabaseId
 export const db = getFirestore(app, (rootFirebaseConfig as any).firestoreDatabaseId);
 
 // Initialize Gemini API
@@ -27,15 +27,24 @@ export interface UserProfile {
   email: string | null;
   displayName: string | null;
   uid: string;
+  onboardingComplete?: boolean;
+  mainCrop?: string;
+  campaignBudget?: number;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private platformId = inject(PLATFORM_ID);
+  private router = inject(Router);
+  
   private userSignal = signal<UserProfile | null>(null);
+  private profileLoaded = signal(false);
   
   readonly user = this.userSignal.asReadonly();
   readonly isLoggedIn = computed(() => this.userSignal() !== null);
+  readonly isProfileLoaded = this.profileLoaded.asReadonly();
+
+  private unsubscribeProfile?: () => void;
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
@@ -47,30 +56,47 @@ export class AuthService {
 
   private initAuthListener() {
     onAuthStateChanged(auth, async (firebaseUser) => {
+      if (this.unsubscribeProfile) this.unsubscribeProfile();
+
       if (firebaseUser) {
+        // Initial state from Auth
         this.userSignal.set({
           email: firebaseUser.email,
           displayName: firebaseUser.displayName,
           uid: firebaseUser.uid
         });
         
-        // Sync user profile to Firestore
-        try {
-          const userDocParams: any = {
-            email: firebaseUser.email || '',
-            lastLoginAt: new Date().toISOString()
-          };
-          if (firebaseUser.displayName) {
-            userDocParams.displayName = firebaseUser.displayName;
+        // Real-time sync for profile and onboarding status
+        this.unsubscribeProfile = onSnapshot(doc(db, 'users', firebaseUser.uid), (snap) => {
+          if (snap.exists()) {
+            const data = snap.data();
+            this.userSignal.update(u => u ? ({ ...u, ...data } as UserProfile) : null);
+          } else {
+            // New user, trigger initial sync
+            this.syncInitialProfile(firebaseUser);
           }
-          await setDoc(doc(db, 'users', firebaseUser.uid), userDocParams, { merge: true });
-        } catch (error) {
-          console.error("Failed to sync user profile to Firestore", error);
-        }
+          this.profileLoaded.set(true);
+        });
       } else {
         this.userSignal.set(null);
+        this.profileLoaded.set(false);
       }
     });
+  }
+
+  private async syncInitialProfile(firebaseUser: any) {
+    try {
+      const userDocParams: any = {
+        email: firebaseUser.email || '',
+        lastLoginAt: new Date().toISOString()
+      };
+      if (firebaseUser.displayName) {
+        userDocParams.displayName = firebaseUser.displayName;
+      }
+      await setDoc(doc(db, 'users', firebaseUser.uid), userDocParams, { merge: true });
+    } catch (error) {
+      console.error("Failed to sync user profile to Firestore", error);
+    }
   }
 
   private async testConnection() {

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, signal, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, signal, inject, effect, Injector, runInInjectionContext} from '@angular/core';
 import {Router} from '@angular/router';
 import {AuthService, db} from './auth.service';
 import {ReactiveFormsModule, FormControl, Validators} from '@angular/forms';
@@ -84,6 +84,7 @@ import {ReactiveFormsModule, FormControl, Validators} from '@angular/forms';
 export class Auth {
   router = inject(Router);
   authService = inject(AuthService);
+  injector = inject(Injector);
   
   isLoading = signal(false);
   isEmailLoading = signal(false);
@@ -96,20 +97,24 @@ export class Auth {
     try {
       await this.authService.loginWithGoogle();
       
-      // Wait a moment for the auth listener to fire and sync
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Check if user already completed onboarding
-      const user = this.authService.user();
-      if (user) {
-        const { getDoc, doc } = await import('firebase/firestore');
-        const userSnap = await getDoc(doc(db, 'users', user.uid));
-        if (userSnap.exists() && userSnap.data()['onboardingComplete']) {
-          this.router.navigate(['/app']); // Redirect to home/dashboard if already done
-        } else {
-          this.router.navigate(['/onboarding']);
-        }
-      }
+      // The auth listener in AuthService will sync the user profile.
+      // We wait for it to load to decide where to go.
+      runInInjectionContext(this.injector, () => {
+        const checkOnboarding = effect(() => {
+          const user = this.authService.user();
+          const loaded = this.authService.isProfileLoaded();
+          
+          if (user && loaded) {
+            if (user.onboardingComplete) {
+              this.router.navigate(['/app']);
+            } else {
+              this.router.navigate(['/onboarding']);
+            }
+            checkOnboarding.destroy();
+          }
+        });
+      });
+
     } catch (err) {
       console.error('Login failed', err);
     } finally {
