@@ -1,0 +1,52 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile data for producers",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "lastLoginAt": { "type": "string", "format": "date-time" },
+        "mainCrop": { "type": "string" },
+        "campaignBudget": { "type": "number" },
+        "budgetDistribution": { 
+          "type": "object",
+          "properties": {
+            "strategy": { "type": "string", "enum": ["ai_resilience", "manual"] },
+            "seeds": { "type": "number" },
+            "soil": { "type": "number" },
+            "protection": { "type": "number" },
+            "labor": { "type": "number" },
+            "reserve": { "type": "number" }
+          }
+        },
+        "savingsGoal": { "type": "string" },
+        "onboardingComplete": { "type": "boolean" }
+      },
+      "required": ["email", "lastLoginAt"]
+    },
+    "Transaction": {
+      "title": "Campaign Transaction",
+      "description": "Records of expenses during the agricultural season",
+      "type": "object",
+      "properties": {
+        "amount": { "type": "number" },
+        "category": { "type": "string", "enum": ["seeds", "soil", "protection", "labor", "logistics", "other"] },
+        "description": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["amount", "category", "date"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Stores individual user profiles"
+    },
+    "/users/{userId}/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Historical record of farmer expenses"
+    }
+  }
+}

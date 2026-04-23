@@ -1,0 +1,156 @@
+<div class="min-h-screen bg-[#FDFCFB] text-slate-900 font-sans p-4 md:p-6 flex flex-col">
+  <div class="max-w-7xl mx-auto w-full flex-grow flex flex-col">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-6 z-50">
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 bg-[#1B4332] rounded-xl flex items-center justify-center">
+          <span class="material-icons-round text-white">eco</span>
+        </div>
+        <span class="text-2xl font-bold tracking-tight text-[#1B4332] font-display">KivuShamba</span>
+      </div>
+      <nav class="hidden md:flex gap-6 text-sm font-medium items-center">
+        <span class="text-[#1B4332] cursor-pointer">Plateforme</span>
+        <span class="text-slate-500 cursor-pointer hover:text-slate-800 transition-colors">Impact</span>
+        <span class="text-slate-500 cursor-pointer hover:text-slate-800 transition-colors">Communauté</span>
+        <div class="flex items-center gap-1 bg-white border border-slate-200 px-3 py-1.5 rounded-full text-xs">
+          <span class="font-bold">FR</span>
+          <span class="text-slate-300">|</span>
+          <span class="opacity-50">LN</span>
+          <span class="text-slate-300">|</span>
+          <span class="opacity-50">SW</span>
+        </div>
+      </nav>
+      <div class="md:hidden">
+        <button class="w-10 h-10 flex items-center justify-center rounded-full border border-slate-200 text-[#1B4332] bg-white shadow-sm">
+          <span class="material-icons-round text-xl">menu</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Bento Grid -->
+    <main class="grid grid-cols-1 md:grid-cols-12 md:grid-rows-[auto] lg:grid-rows-5 gap-4 flex-grow mb-6">
+      
+      <!-- Hero Section -->
+      <div class="col-span-1 md:col-span-12 lg:col-span-8 lg:row-span-3 bg-[#1B4332] rounded-[32px] p-8 md:p-10 flex flex-col justify-center text-white relative overflow-hidden shadow-xl">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-[#2D6A4F] rounded-full -mr-20 -mt-20 opacity-50"></div>
+        <div class="relative z-10 flex flex-col h-full">
+          <span class="uppercase tracking-widest text-xs font-bold text-[#95D5B2] mb-4 block underline underline-offset-8">Souveraineté Alimentaire</span>
+          <h1 class="font-display text-4xl md:text-5xl lg:text-[56px] font-extrabold leading-[1.05] tracking-tight mb-6 max-w-xl">
+            L'agronomie de pointe,<br/>accessible à chaque ferme.
+          </h1>
+          <p class="text-lg md:text-xl text-[#D8F3DC] max-w-lg mb-8 leading-relaxed font-medium">
+            Diagnostiquez, prévoyez et optimisez vos rendements sans connexion Internet permanente. L'IA au service de votre champ.
+          </p>
+          <div class="mt-auto">
+            <button (click)="startAssistance()" class="bg-[#D97706] hover:bg-[#B45309] text-white font-bold py-4 px-8 rounded-2xl shadow-lg flex items-center justify-center gap-3 transition-colors max-w-max">
+              @if (assistanceStarted()) {
+                Connexion au terrain...
+                <span class="material-icons-round animate-spin">refresh</span>
+              } @else {
+                Démarrer l'assistance
+                <span class="material-icons-round transform transition-transform">arrow_forward</span>
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature: Technology Focus (Edge AI & Sync) -->
+      <div class="col-span-1 md:col-span-6 lg:col-span-4 lg:row-span-3 bg-white border-2 border-slate-100 rounded-[24px] p-6 md:p-8 shadow-sm flex flex-col">
+        <div>
+            <h3 class="font-bold text-xl mb-4 flex items-center gap-3">
+              <div class="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse"></div>
+              Edge AI & Sync
+            </h3>
+            <div class="space-y-4">
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-4">
+                  <div class="text-xs font-mono font-bold text-slate-400">01</div>
+                  <div class="text-sm font-semibold italic">Offline-First Logic</div>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-4">
+                  <div class="text-xs font-mono font-bold text-slate-400">02</div>
+                  <div class="text-sm font-semibold">Firebase Realtime Sync</div>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-4">
+                  <div class="text-xs font-mono font-bold text-slate-400">03</div>
+                  <div class="text-sm font-semibold">Light-Weight Core (12MB)</div>
+              </div>
+            </div>
+        </div>
+        <div class="mt-auto pt-6">
+          <div class="flex items-center justify-between text-[10px] uppercase font-bold text-slate-400 mb-2">
+            <span>Synchronisation Cloud</span>
+            <span>98%</span>
+          </div>
+          <div class="w-full h-1.5 bg-slate-100 rounded-full">
+            <div class="w-[98%] h-full bg-[#1B4332] rounded-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature 1: Diagnostic Photo -->
+      <div class="col-span-1 md:col-span-6 lg:col-span-4 lg:row-span-2 bg-white border-2 border-slate-100 rounded-[24px] p-6 shadow-sm flex flex-col">
+        <div class="w-12 h-12 bg-[#FDE68A] rounded-full flex items-center justify-center mb-5">
+          <span class="material-icons-round text-[#92400E]">filter_center_focus</span>
+        </div>
+        <h3 class="font-bold text-xl mb-2 text-slate-800">Vision API Offline</h3>
+        <p class="text-slate-500 text-sm leading-snug font-medium mb-6">Diagnostiquez maladies et ravageurs instantanément par photo, même sans réseau.</p>
+        <div class="mt-auto flex gap-2">
+           <div class="h-1.5 bg-[#1B4332] flex-grow rounded-full"></div>
+           <div class="h-1.5 bg-slate-100 w-12 rounded-full"></div>
+        </div>
+      </div>
+
+      <!-- Feature 2: Météo -->
+      <div class="col-span-1 md:col-span-6 lg:col-span-4 lg:row-span-2 bg-[#E9EDC9] rounded-[24px] p-6 flex flex-col">
+        <div class="flex justify-between items-start mb-4">
+          <div class="text-4xl font-display font-bold text-[#1B4332]">32°</div>
+          <div class="text-right">
+            <p class="text-[10px] font-bold uppercase text-[#4F772D]">Météo Hyper-Locale</p>
+            <p class="text-xs font-medium text-slate-700">Dimbokro, CI</p>
+          </div>
+        </div>
+        <p class="text-sm text-[#4F772D] font-medium leading-relaxed">Prévisions de semis optimisées basées sur les données climatiques locales en temps réel.</p>
+        <div class="mt-auto pt-4 grid grid-cols-4 gap-2 items-end h-16">
+          <div class="h-8 bg-[#CCD5AE] rounded-md"></div>
+          <div class="h-12 bg-[#A3B18A] rounded-md"></div>
+          <div class="h-6 bg-[#CCD5AE] rounded-md mt-4"></div>
+          <div class="h-14 bg-[#588157] rounded-md"></div>
+        </div>
+      </div>
+
+      <!-- Feature 3: Conseil Vocal & Stats -->
+      <div class="col-span-1 md:col-span-6 lg:col-span-4 lg:row-span-2 flex flex-col gap-4">
+         <div class="flex-1 bg-[#D97706] rounded-[24px] px-6 py-5 flex items-center justify-between text-white shadow-sm overflow-hidden">
+             <div class="flex items-center gap-4">
+                 <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                     <span class="material-icons-round text-sm">record_voice_over</span>
+                 </div>
+                 <span class="font-bold text-lg leading-tight">Conseiller Vocal<br/>Gemini</span>
+             </div>
+             <span class="text-xs bg-white/20 px-2 py-1 rounded-md font-medium">Bêta</span>
+         </div>
+         <div class="bg-slate-900 rounded-[24px] p-6 flex flex-wrap items-center gap-6 shadow-sm text-white h-auto min-h-[96px]">
+             <div class="flex flex-col">
+                 <span class="text-[10px] text-slate-500 font-bold uppercase">Latence</span>
+                 <span class="text-white font-mono font-bold text-sm">120ms</span>
+             </div>
+             <div class="flex flex-col">
+                 <span class="text-[10px] text-slate-500 font-bold uppercase">Modèles AI</span>
+                 <span class="text-white font-mono font-bold text-sm">TensorFlow Lite</span>
+             </div>
+             <div class="ml-auto flex -space-x-2">
+                 <div class="w-6 h-6 rounded-full bg-blue-500 border-2 border-slate-900"></div>
+                 <div class="w-6 h-6 rounded-full bg-green-500 border-2 border-slate-900"></div>
+             </div>
+         </div>
+      </div>
+      
+    </main>
+
+    <!-- Footer -->
+    <footer class="pt-6 border-t border-slate-200 flex justify-center items-center text-xs text-slate-400 font-medium pb-8 mt-auto">
+      <p>© 2026 KivuShamba. Tous droits réservés.</p>
+    </footer>
+  </div>
+</div>

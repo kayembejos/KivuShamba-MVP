@@ -1,0 +1,6 @@
+{
+  "name": "KivuShamba",
+  "description": "L'agronome de poche pour le Kivu. Application mobile-first offline pour conseiller et diagnostiquer les cultures.",
+  "requestFramePermissions": ["camera", "geolocation"],
+  "majorCapabilities": []
+}

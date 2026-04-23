@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} { allow read, write: if false; }
+    
+    // global helper definitions
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return request.auth.uid == userId; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128; }
+
+    // Validation helper for User entity
+    function isValidUser(data) {
+      let keys = data.keys();
+      return keys.hasAll(['email', 'lastLoginAt']) &&
+             data.email is string && data.email.size() <= 100 &&
+             data.lastLoginAt is string &&
+             (!keys.hasAny(['displayName']) || (data.displayName is string && data.displayName.size() <= 100)) &&
+             (!keys.hasAny(['mainCrop']) || (data.mainCrop is string)) &&
+             (!keys.hasAny(['campaignBudget']) || (data.campaignBudget is number)) &&
+             (!keys.hasAny(['onboardingComplete']) || (data.onboardingComplete is bool)) &&
+             (!keys.hasAny(['budgetDistribution']) || (data.budgetDistribution is map));
+    }
+
+    // Validation helper for Transaction entity
+    function isValidTransaction(data) {
+      return data.amount is number && 
+             data.category is string && 
+             data.date is string;
+    }
+
+    match /users/{userId} {
+      // Identity isolation: Only owner can access their own data
+      allow get: if isSignedIn() && isValidId(userId) && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+
+      allow create: if isSignedIn() && 
+                       isValidId(userId) && 
+                       isOwner(userId) && 
+                       isValidUser(incoming()) &&
+                       incoming().keys().size() <= 15;
+
+      allow update: if isSignedIn() && 
+                       isValidId(userId) && 
+                       isOwner(userId) && 
+                       isValidUser(incoming()) &&
+                       // Action-based safety: ensure email and creation integrity
+                       incoming().email == existing().email &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'displayName', 'lastLoginAt', 'mainCrop', 
+                         'campaignBudget', 'budgetDistribution', 
+                         'savingsGoal', 'onboardingComplete'
+                       ]);
+
+      // Nested transactions storage
+      match /transactions/{transactionId} {
+        allow read: if isSignedIn() && isOwner(userId);
+        allow create: if isSignedIn() && isOwner(userId) && isValidTransaction(incoming());
+        allow update, delete: if isSignedIn() && isOwner(userId);
+      }
+    }
+  }
+}

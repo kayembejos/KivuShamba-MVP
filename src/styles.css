@@ -1,0 +1,30 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-agri-bg: #F8FAF5; /* Very warm light green-white */
+  --color-agri-green: #2E7D32; /* Primary */
+  --color-agri-dark: #1B3F20; /* Deep Ink */
+  --color-agri-earth: #C76A28; /* Terracotta CTA */
+  --color-agri-card: #FFFFFF;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-agri-bg);
+  color: var(--color-agri-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+.icon-round {
+  font-family: 'Material Icons Round';
+}
